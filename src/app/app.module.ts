@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 
@@ -24,7 +24,8 @@ const modules = [
   ],
   imports: modules,
   providers: [
-    provideHttpClient()
+    provideHttpClient(),
+    provideClientHydration()
   ],
   bootstrap: [AppComponent]
 })

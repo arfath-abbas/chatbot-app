@@ -5,6 +5,8 @@ import { HomeScreenComponent } from './home-screen.component';
 import { FormsModule } from '@angular/forms';
 import { provideHttpClient } from '@angular/common/http';
 
+import { FileUploadModule } from 'primeng/fileupload';
+
 const routes: Routes = [
   { path: '', component: HomeScreenComponent },
   { path: 'home', component: HomeScreenComponent },
@@ -13,7 +15,7 @@ const routes: Routes = [
 @NgModule({
   declarations: [HomeScreenComponent],
   imports: [
-    CommonModule, RouterModule.forChild(routes), FormsModule
+    CommonModule, RouterModule.forChild(routes), FormsModule, FileUploadModule,
   ],
   providers: [
     provideHttpClient(),

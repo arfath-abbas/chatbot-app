@@ -1,20 +1,56 @@
-<div class="chat-container">
-    <div class="chat-header">
-        <h1>Chatbot Assistant</h1>
+<div class="chat-layout">
+    <!-- Sidebar -->
+    <div class="chat-sidebar">
+        <div class="sidebar-header">
+            <button class="new-chat-btn" (click)="createNewChat()">+ New Chat</button>
+        </div>
+        <ul>
+            <li *ngFor="let chat of chatSessions; let i = index" [class.active]="i === activeChatIndex">
+                <span (click)="switchChat(i)">Chat {{ i + 1 }}</span>
+                <button class="delete-chat-btn" (click)="confirmDeleteChat(i)">
+                    <i class="pi pi-trash"></i>
+                </button>
+            </li>
+        </ul>
     </div>
 
-    <!-- Messages Section -->
-    <div class="chat-messages" #messagesContainer>
-        <div *ngFor="let message of messages"
-            [ngClass]="{ 'user-message': message.sender === 'user', 'bot-message': message.sender === 'bot' }">
-            {{ message.content }}
+    <!-- Main Chat Area -->
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>Chatbot Assistant</h1>
+        </div>
+
+        <!-- Messages Section -->
+        <div class="chat-messages" #messagesContainer>
+            <div *ngFor="let message of activeChat.messages" [ngClass]="{
+            'user-message': message.sender === 'user',
+            'bot-message': message.sender === 'bot'
+          }">
+                <div *ngIf="!message.image">{{ message.content }}</div>
+                <img *ngIf="message.image" [src]="message.image" alt="Image" class="chat-image" />
+            </div>
+        </div>
+
+        <!-- Input Section -->
+        <div class="chat-input">
+            <button class="attach-button" (click)="fileInput.click()">
+                <i class="pi pi-paperclip"></i>
+            </button>
+            <input type="file" #fileInput (change)="attachFile($event)" hidden />
+            <input type="text" class="input-box" placeholder="Type your message..." [(ngModel)]="userInput"
+                (keyup.enter)="sendMessage()" />
+            <button class="send-button" (click)="sendMessage()">Send</button>
         </div>
     </div>
 
-    <!-- Input Section -->
-    <div class="chat-input">
-        <input type="text" class="input-box" placeholder="Type your message..." [(ngModel)]="userInput"
-            (keyup.enter)="sendMessage()" />
-        <button class="send-button" (click)="sendMessage()">Send</button>
+    <!-- Confirmation Popup -->
+    <div class="confirmation-popup" *ngIf="showConfirmationPopup">
+        <div class="popup-content">
+            <p>Are you sure you want to delete this chat history?</p>
+            <div class="popup-buttons">
+                <button (click)="deleteChat()">Yes, delete history</button>
+                <button (click)="cancelDelete()">Cancel</button>
+            </div>
+        </div>
     </div>
 </div>

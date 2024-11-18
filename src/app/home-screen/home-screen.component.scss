@@ -1,15 +1,75 @@
-.chat-container {
+.chat-layout {
+    display: flex;
+    height: 100vh;
+    background-color: #f7f7f7;
+}
+
+.chat-sidebar {
+    width: 250px;
+    background-color: #2a2a2a;
+    color: #ffffff;
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    /* Full viewport height */
-    max-width: 600px;
-    margin: 0 auto;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-header {
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid #444;
+}
+
+.new-chat-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.new-chat-btn:hover {
+    background-color: #0056b3;
+}
+
+.chat-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.chat-sidebar ul li {
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #444;
+}
+
+.chat-sidebar ul li:hover,
+.chat-sidebar ul li.active {
+    background-color: #444;
+}
+
+.delete-chat-btn {
+    background: transparent;
+    border: none;
+    color: #ff4d4d;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.delete-chat-btn:hover {
+    color: #ff1a1a;
+}
+
+.chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
-    /* Prevents full screen scrollbars */
     background-color: #ffffff;
 }
 
@@ -22,11 +82,9 @@
 
 .chat-messages {
     flex: 1;
-    /* Makes this area dynamically take available space */
     padding: 15px;
     overflow-y: auto;
-    /* Adds a scrollbar when content overflows */
-    background-color: #f7f7f7;
+    background-color: #ffffff;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -42,15 +100,12 @@
 
 .user-message {
     align-self: flex-end;
-    /* Align the entire div to the right */
     background-color: #d1e7dd;
     text-align: left;
-    /* Text inside remains left-aligned for readability */
 }
 
 .bot-message {
     align-self: flex-start;
-    /* Align the entire div to the left */
     background-color: #f8d7da;
     text-align: left;
 }
@@ -61,6 +116,20 @@
     padding: 10px;
     background-color: #ffffff;
     border-top: 1px solid #e6e6e6;
+}
+
+.attach-button {
+    margin-right: 10px;
+    padding: 10px;
+    border: none;
+    background-color: transparent;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.attach-button:hover {
+    color: #0056b3;
 }
 
 .input-box {
@@ -79,9 +148,59 @@
     color: white;
     border-radius: 10px;
     cursor: pointer;
-    outline: none;
 }
 
 .send-button:hover {
     background-color: #0056b3;
+}
+
+.confirmation-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-content {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.popup-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+}
+
+.popup-buttons button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.popup-buttons button:first-child {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+.popup-buttons button:first-child:hover {
+    background-color: #ff1a1a;
+}
+
+.popup-buttons button:last-child {
+    background-color: #ccc;
+    color: #333;
+}
+
+.popup-buttons button:last-child:hover {
+    background-color: #bbb;
 }
