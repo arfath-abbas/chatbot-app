@@ -76,12 +76,6 @@
                     <i class="pi pi-file"></i>
                     <span>{{ pendingFile.file.name }}</span>
                 </div>
-
-                <!-- Fallback for Unsupported Types -->
-                <div *ngIf="!isAllowedFile(pendingFile.file)" class="file-preview">
-                    <i class="pi pi-ban"></i>
-                    <span>Unsupported File: {{ pendingFile.file.name }}</span>
-                </div>
             </div>
 
             <!-- Error Message for Invalid Files -->

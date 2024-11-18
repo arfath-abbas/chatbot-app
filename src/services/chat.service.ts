@@ -1,27 +1,24 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../environments/environment';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ChatService {
-    private apiUrl = `${environment.apiUrl}/chat`; // Chat endpoint
+    private apiUrl = 'http://127.0.0.1:8000';
 
     constructor(private http: HttpClient) { }
 
-    // Send message to the backend
-    sendMessage(message: { content: string; image?: string }): Observable<{ reply: string }> {
-        // Call backend API with message object
-        return this.http.post<{ reply: string }>(this.apiUrl, message);
+    sendMessage(message: { content: string; image?: string }): Observable<{ text: string }> {
+        const url = `${this.apiUrl}/query/?query=${encodeURIComponent(message.content)}`;
+        return this.http.get<{ text: string }>(url);
     }
 
-
-    // Upload file to the backend
-    uploadFile(file: File): Observable<any> {
+    uploadFile(file: File): Observable<{ message: string; fileUrl: string }> {
         const formData = new FormData();
         formData.append('file', file);
-        return this.http.post(`${environment.apiUrl}/upload`, formData);
+
+        return this.http.post<{ message: string; fileUrl: string }>(`${this.apiUrl}/upload/`, formData);
     }
 }
