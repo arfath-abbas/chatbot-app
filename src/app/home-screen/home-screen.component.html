@@ -1,0 +1,20 @@
+<div class="chat-container">
+    <div class="chat-header">
+        <h1>Chatbot Assistant</h1>
+    </div>
+
+    <!-- Messages Section -->
+    <div class="chat-messages" #messagesContainer>
+        <div *ngFor="let message of messages"
+            [ngClass]="{ 'user-message': message.sender === 'user', 'bot-message': message.sender === 'bot' }">
+            {{ message.content }}
+        </div>
+    </div>
+
+    <!-- Input Section -->
+    <div class="chat-input">
+        <input type="text" class="input-box" placeholder="Type your message..." [(ngModel)]="userInput"
+            (keyup.enter)="sendMessage()" />
+        <button class="send-button" (click)="sendMessage()">Send</button>
+    </div>
+</div>

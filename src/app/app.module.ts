@@ -1,18 +1,31 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { HomeScreenModule } from './home-screen/home-screen.module';
+import { provideHttpClient } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
+
+const modules = [
+  BrowserModule,
+  BrowserAnimationsModule,
+  AppRoutingModule,
+  RouterModule,
+  FormsModule,
+  HomeScreenModule,
+];
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule
+  imports: modules,
+  providers: [
+    provideHttpClient()
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
