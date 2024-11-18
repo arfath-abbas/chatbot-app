@@ -38,20 +38,22 @@ export class HomeScreenComponent {
 
   get activeChat(): ChatSession | null {
     const chat = this.chatSessions[this.activeChatIndex];
-    console.log('Active chat:', chat);
     return chat || null;
   }
 
   // Sends the user's message (combines text and file if present)
   sendMessage() {
     if (this.userInput.trim() || this.pendingFile) {
-      // Ensure content is always a string
+      if (this.pendingFile && !this.isAllowedFile(this.pendingFile.file)) {
+        alert('Cannot send the message. Invalid file format.');
+        return;
+      }
+
       const userMessage = {
-        content: this.userInput.trim() || '', // Default to an empty string if no text
-        image: this.pendingFile?.preview || undefined, // Include the image if available
+        content: this.pendingFile?.file.name || this.userInput.trim(),
+        image: this.pendingFile?.file.type.startsWith('image/') ? this.pendingFile.preview : undefined,
       };
 
-      // Add the combined message to the active chat
       if (this.activeChat) {
         this.activeChat.messages.push({
           content: userMessage.content,
@@ -60,11 +62,9 @@ export class HomeScreenComponent {
         });
       }
 
-      // Clear the input and pending file
       this.userInput = '';
       this.pendingFile = null;
 
-      // Send the message to the backend
       this.chatService.sendMessage(userMessage).subscribe(
         (response) => {
           if (this.activeChat) {
@@ -80,19 +80,38 @@ export class HomeScreenComponent {
     }
   }
 
+
+  // Helper function to validate file type
+  isAllowedFile(file: File): boolean {
+    const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'text/plain'];
+    return allowedTypes.includes(file.type);
+  }
+
   // Handles file attachment
   attachFile(event: Event) {
     const input = event.target as HTMLInputElement;
+
     if (input.files && input.files[0]) {
       const file = input.files[0];
+
+      // Allowed file types
+      const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'text/plain'];
+
+      if (!allowedTypes.includes(file.type)) {
+        // Show an error if the file type is not supported
+        alert('Invalid file type. Please upload a .pdf, .png, .jpeg, or .txt file.');
+        input.value = '';
+        return;
+      }
+
       const reader = new FileReader();
 
       reader.onload = () => {
-        // Set the file as pending with a preview
+        // Set the pending file with a preview
         this.pendingFile = { file, preview: reader.result as string };
       };
 
-      reader.readAsDataURL(file); // Convert file to Base64
+      reader.readAsDataURL(file); // Convert the file to a Base64 URL for preview
     }
   }
 
@@ -115,10 +134,8 @@ export class HomeScreenComponent {
 
       // Adjust the active chat index
       if (this.chatToDeleteIndex === this.activeChatIndex) {
-        // If the deleted chat is the active chat, update to a valid session
         this.activeChatIndex = Math.min(this.chatToDeleteIndex, this.chatSessions.length - 1);
       } else if (this.chatToDeleteIndex < this.activeChatIndex) {
-        // Shift active index if a preceding chat was deleted
         this.activeChatIndex -= 1;
       }
 
@@ -127,14 +144,14 @@ export class HomeScreenComponent {
         this.createNewChat();
       }
 
-      this.chatToDeleteIndex = null; // Reset the delete index
-      this.showConfirmationPopup = false; // Hide the popup
+      this.chatToDeleteIndex = null;
+      this.showConfirmationPopup = false;
     }
   }
 
   // Cancels chat deletion
   cancelDelete() {
-    this.chatToDeleteIndex = null; // Reset the index
-    this.showConfirmationPopup = false; // Hide the popup
+    this.chatToDeleteIndex = null;
+    this.showConfirmationPopup = false;
   }
 }

@@ -26,9 +26,27 @@
             <div *ngFor="let message of activeChat.messages" [ngClass]="{
                 'user-message': message.sender === 'user',
                 'bot-message': message.sender === 'bot'
-              }">
+                }">
+                <!-- Image Messages -->
                 <img *ngIf="message.image" [src]="message.image" alt="Image" class="chat-image" />
-                <div *ngIf="message.content" class="chat-text">{{ message.content }}</div>
+
+                <!-- PDF Messages -->
+                <div *ngIf="message.content && message.content.endsWith('.pdf')" class="file-message">
+                    <i class="pi pi-file-pdf"></i>
+                    <a [href]="message.content" target="_blank">View PDF: {{ message.content }}</a>
+                </div>
+
+                <!-- Text File Messages -->
+                <div *ngIf="message.content && message.content.endsWith('.txt')" class="file-message">
+                    <i class="pi pi-file"></i>
+                    <span>Text File: {{ message.content }}</span>
+                </div>
+
+                <!-- Fallback for Plain Text Messages -->
+                <div
+                    *ngIf="!message.image && message.content && !message.content.endsWith('.pdf') && !message.content.endsWith('.txt')">
+                    {{ message.content }}
+                </div>
             </div>
         </div>
 
@@ -41,17 +59,51 @@
         <div class="chat-input">
             <!-- Pending File Preview -->
             <div *ngIf="pendingFile" class="pending-file">
-                <p>Pending File:</p>
-                <img [src]="pendingFile.preview" alt="Pending File" class="chat-image" />
+                <p>Pending File: {{ pendingFile.file.name }}</p>
+
+                <!-- Image Preview -->
+                <img *ngIf="pendingFile.file.type.startsWith('image/')" [src]="pendingFile.preview" alt="Image Preview"
+                    class="chat-image" />
+
+                <!-- PDF Icon with Name -->
+                <div *ngIf="pendingFile.file.type === 'application/pdf'" class="file-preview">
+                    <i class="pi pi-file-pdf"></i>
+                    <span>{{ pendingFile.file.name }}</span>
+                </div>
+
+                <!-- Text File Icon with Name -->
+                <div *ngIf="pendingFile.file.type === 'text/plain'" class="file-preview">
+                    <i class="pi pi-file"></i>
+                    <span>{{ pendingFile.file.name }}</span>
+                </div>
+
+                <!-- Fallback for Unsupported Types -->
+                <div *ngIf="!isAllowedFile(pendingFile.file)" class="file-preview">
+                    <i class="pi pi-ban"></i>
+                    <span>Unsupported File: {{ pendingFile.file.name }}</span>
+                </div>
             </div>
 
+            <!-- Error Message for Invalid Files -->
+            <div *ngIf="pendingFile && !isAllowedFile(pendingFile.file)" class="error-message">
+                Invalid file type. Only .pdf, .png, .jpeg, and .txt files are allowed.
+            </div>
+
+            <!-- Attach Button -->
             <button class="attach-button" (click)="fileInput.click()">
                 <i class="pi pi-paperclip"></i>
             </button>
             <input type="file" #fileInput (change)="attachFile($event)" hidden />
+
+            <!-- Input Box -->
             <input type="text" class="input-box" placeholder="Type your reference message..." [(ngModel)]="userInput"
                 (keyup.enter)="sendMessage()" />
-            <button class="send-button" (click)="sendMessage()">Send</button>
+
+            <!-- Send Button -->
+            <button class="send-button" [disabled]="pendingFile && !isAllowedFile(pendingFile.file)"
+                (click)="sendMessage()">
+                Send
+            </button>
         </div>
     </div>
 
