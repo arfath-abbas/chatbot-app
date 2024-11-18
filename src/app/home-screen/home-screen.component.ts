@@ -27,11 +27,19 @@ export class HomeScreenComponent {
   constructor(private chatService: ChatService) { }
 
   // Getter to access the active chat session
-  get activeChat(): ChatSession | null {
-    if (this.activeChatIndex >= 0 && this.activeChatIndex < this.chatSessions.length) {
-      return this.chatSessions[this.activeChatIndex];
+  switchChat(index: number) {
+    if (index >= 0 && index < this.chatSessions.length) {
+      this.activeChatIndex = index;
+      console.log('Switched to chat:', this.chatSessions[index]);
+    } else {
+      console.error('Invalid chat index');
     }
-    return null;
+  }
+
+  get activeChat(): ChatSession | null {
+    const chat = this.chatSessions[this.activeChatIndex];
+    console.log('Active chat:', chat);
+    return chat || null;
   }
 
   // Sends the user's message (combines text and file if present)
@@ -94,15 +102,6 @@ export class HomeScreenComponent {
     this.activeChatIndex = this.chatSessions.length - 1; // Set the new chat as active
   }
 
-  // Switches to an existing chat session
-  switchChat(index: number) {
-    if (index >= 0 && index < this.chatSessions.length) {
-      this.activeChatIndex = index; // Change active chat index
-    } else {
-      console.error('Invalid chat index');
-    }
-  }
-
   // Shows the confirmation popup for deleting a chat
   confirmDeleteChat(index: number) {
     this.chatToDeleteIndex = index; // Store the index of the chat to delete
@@ -112,17 +111,23 @@ export class HomeScreenComponent {
   // Deletes the selected chat session
   deleteChat() {
     if (this.chatToDeleteIndex !== null) {
-      this.chatSessions.splice(this.chatToDeleteIndex, 1); // Remove the chat session
+      this.chatSessions.splice(this.chatToDeleteIndex, 1); // Remove the selected chat session
 
       // Adjust the active chat index
-      if (this.chatSessions.length === 0) {
-        this.createNewChat(); // Create a new chat if no sessions remain
-      } else if (this.chatToDeleteIndex === this.activeChatIndex) {
-        // If the deleted chat was active, reset active index
+      if (this.chatToDeleteIndex === this.activeChatIndex) {
+        // If the deleted chat is the active chat, update to a valid session
         this.activeChatIndex = Math.min(this.chatToDeleteIndex, this.chatSessions.length - 1);
+      } else if (this.chatToDeleteIndex < this.activeChatIndex) {
+        // Shift active index if a preceding chat was deleted
+        this.activeChatIndex -= 1;
       }
 
-      this.chatToDeleteIndex = null; // Reset the chat to delete index
+      if (this.chatSessions.length === 0) {
+        // If no chats are left, create a new chat
+        this.createNewChat();
+      }
+
+      this.chatToDeleteIndex = null; // Reset the delete index
       this.showConfirmationPopup = false; // Hide the popup
     }
   }

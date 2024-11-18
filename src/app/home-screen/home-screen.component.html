@@ -5,8 +5,9 @@
             <button class="new-chat-btn" (click)="createNewChat()">+ New Chat</button>
         </div>
         <ul>
-            <li *ngFor="let chat of chatSessions; let i = index" [class.active]="i === activeChatIndex">
-                <span (click)="switchChat(i)">Chat {{ i + 1 }}</span>
+            <li *ngFor="let chat of chatSessions; let i = index" [class.active]="i === activeChatIndex"
+                (click)="switchChat(i)">
+                <span>Chat {{ i + 1 }}</span>
                 <button class="delete-chat-btn" (click)="confirmDeleteChat(i)">
                     <i class="pi pi-trash"></i>
                 </button>
@@ -23,9 +24,9 @@
         <!-- Messages Section -->
         <div class="chat-messages" *ngIf="activeChat; else noChatSelected">
             <div *ngFor="let message of activeChat.messages" [ngClass]="{
-            'user-message': message.sender === 'user',
-            'bot-message': message.sender === 'bot'
-          }">
+                'user-message': message.sender === 'user',
+                'bot-message': message.sender === 'bot'
+              }">
                 <img *ngIf="message.image" [src]="message.image" alt="Image" class="chat-image" />
                 <div *ngIf="message.content" class="chat-text">{{ message.content }}</div>
             </div>
