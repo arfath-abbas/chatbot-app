@@ -84,10 +84,9 @@
     flex: 1;
     padding: 15px;
     overflow-y: auto;
-    background-color: #ffffff;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
 }
 
 .chat-messages div {
@@ -95,7 +94,9 @@
     border-radius: 10px;
     max-width: 75%;
     word-wrap: break-word;
-    display: inline-block;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .user-message {
@@ -110,12 +111,46 @@
     text-align: left;
 }
 
+.chat-image {
+    max-width: 200px;
+    max-height: 150px;
+    border-radius: 10px;
+    object-fit: cover;
+    margin: 0 auto;
+}
+
+.chat-text {
+    font-size: 14px;
+    color: #333;
+}
+
 .chat-input {
     display: flex;
     align-items: center;
     padding: 10px;
     background-color: #ffffff;
     border-top: 1px solid #e6e6e6;
+}
+
+.pending-file {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.pending-file img {
+    max-width: 200px;
+    max-height: 150px;
+    margin-right: 10px;
+    border-radius: 5px;
+}
+
+.input-box {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    outline: none;
 }
 
 .attach-button {
@@ -130,14 +165,6 @@
 
 .attach-button:hover {
     color: #0056b3;
-}
-
-.input-box {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    outline: none;
 }
 
 .send-button {

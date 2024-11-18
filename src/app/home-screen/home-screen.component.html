@@ -21,23 +21,34 @@
         </div>
 
         <!-- Messages Section -->
-        <div class="chat-messages" #messagesContainer>
+        <div class="chat-messages" *ngIf="activeChat; else noChatSelected">
             <div *ngFor="let message of activeChat.messages" [ngClass]="{
             'user-message': message.sender === 'user',
             'bot-message': message.sender === 'bot'
           }">
-                <div *ngIf="!message.image">{{ message.content }}</div>
                 <img *ngIf="message.image" [src]="message.image" alt="Image" class="chat-image" />
+                <div *ngIf="message.content" class="chat-text">{{ message.content }}</div>
             </div>
         </div>
 
+        <!-- Fallback if no active chat -->
+        <ng-template #noChatSelected>
+            <p>Please select a chat or start a new one.</p>
+        </ng-template>
+
         <!-- Input Section -->
         <div class="chat-input">
+            <!-- Pending File Preview -->
+            <div *ngIf="pendingFile" class="pending-file">
+                <p>Pending File:</p>
+                <img [src]="pendingFile.preview" alt="Pending File" class="chat-image" />
+            </div>
+
             <button class="attach-button" (click)="fileInput.click()">
                 <i class="pi pi-paperclip"></i>
             </button>
             <input type="file" #fileInput (change)="attachFile($event)" hidden />
-            <input type="text" class="input-box" placeholder="Type your message..." [(ngModel)]="userInput"
+            <input type="text" class="input-box" placeholder="Type your reference message..." [(ngModel)]="userInput"
                 (keyup.enter)="sendMessage()" />
             <button class="send-button" (click)="sendMessage()">Send</button>
         </div>

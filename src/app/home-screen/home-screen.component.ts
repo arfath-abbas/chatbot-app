@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { ChatService } from '../../services/chat.service';
 
 interface Message {
-  content?: string; // Optional for text messages
-  image?: string;   // Optional for image messages (Base64 or URL)
+  content?: string; // Text message content
+  image?: string;   // Image message (Base64 or URL)
   sender: 'user' | 'bot';
 }
 
@@ -16,47 +16,63 @@ interface ChatSession {
   templateUrl: './home-screen.component.html',
   styleUrls: ['./home-screen.component.scss'],
 })
-
 export class HomeScreenComponent {
-  userInput: string = '';
-  chatSessions: ChatSession[] = [{ messages: [] }];
-  activeChatIndex: number = 0;
-  showConfirmationPopup: boolean = false;
+  userInput: string = ''; // User input text
+  chatSessions: ChatSession[] = [{ messages: [] }]; // Array of chat sessions
+  activeChatIndex: number = 0; // Index of the active chat session
+  pendingFile: { file: File; preview: string } | null = null; // Holds the pending file and its preview
+  showConfirmationPopup: boolean = false; // To control popup visibility
   chatToDeleteIndex: number | null = null; // Index of the chat to delete
 
   constructor(private chatService: ChatService) { }
 
-  get activeChat(): ChatSession {
-    return this.chatSessions[this.activeChatIndex];
+  // Getter to access the active chat session
+  get activeChat(): ChatSession | null {
+    if (this.activeChatIndex >= 0 && this.activeChatIndex < this.chatSessions.length) {
+      return this.chatSessions[this.activeChatIndex];
+    }
+    return null;
   }
 
+  // Sends the user's message (combines text and file if present)
   sendMessage() {
-    if (this.userInput.trim()) {
-      this.activeChat.messages.push({ content: this.userInput, sender: 'user' });
+    if (this.userInput.trim() || this.pendingFile) {
+      // Ensure content is always a string
+      const userMessage = {
+        content: this.userInput.trim() || '', // Default to an empty string if no text
+        image: this.pendingFile?.preview || undefined, // Include the image if available
+      };
 
-      const userMessage = this.userInput;
+      // Add the combined message to the active chat
+      if (this.activeChat) {
+        this.activeChat.messages.push({
+          content: userMessage.content,
+          image: userMessage.image,
+          sender: 'user',
+        });
+      }
+
+      // Clear the input and pending file
       this.userInput = '';
+      this.pendingFile = null;
 
+      // Send the message to the backend
       this.chatService.sendMessage(userMessage).subscribe(
         (response) => {
-          this.activeChat.messages.push({ content: response.reply, sender: 'bot' });
+          if (this.activeChat) {
+            this.activeChat.messages.push({ content: response.reply, sender: 'bot' });
+          }
         },
         () => {
-          this.activeChat.messages.push({ content: 'Failed to get a response from the bot.', sender: 'bot' });
+          if (this.activeChat) {
+            this.activeChat.messages.push({ content: 'Failed to get a response from the bot.', sender: 'bot' });
+          }
         }
       );
     }
   }
 
-  createNewChat() {
-    this.chatSessions.push({ messages: [] });
-    this.activeChatIndex = this.chatSessions.length - 1;
-  }
-
-  switchChat(index: number) {
-    this.activeChatIndex = index;
-  }
-
+  // Handles file attachment
   attachFile(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
@@ -64,48 +80,56 @@ export class HomeScreenComponent {
       const reader = new FileReader();
 
       reader.onload = () => {
-        // Add file as an image message
-        this.activeChat.messages.push({ image: reader.result as string, sender: 'user' });
-        // Optionally, send the file to the backend
-        this.chatService.uploadFile(file).subscribe(
-          (response) => {
-            this.activeChat.messages.push({ content: 'File uploaded successfully!', sender: 'bot' });
-          },
-          () => {
-            this.activeChat.messages.push({ content: 'Failed to upload the file.', sender: 'bot' });
-          }
-        );
+        // Set the file as pending with a preview
+        this.pendingFile = { file, preview: reader.result as string };
       };
-      // Convert file to Base64
-      reader.readAsDataURL(file);
+
+      reader.readAsDataURL(file); // Convert file to Base64
     }
   }
 
-  confirmDeleteChat(index: number) {
-    // Store the index of the chat to delete
-    this.chatToDeleteIndex = index;
-    this.showConfirmationPopup = true;
+  // Creates a new chat session
+  createNewChat() {
+    this.chatSessions.push({ messages: [] }); // Add a new empty chat session
+    this.activeChatIndex = this.chatSessions.length - 1; // Set the new chat as active
   }
 
+  // Switches to an existing chat session
+  switchChat(index: number) {
+    if (index >= 0 && index < this.chatSessions.length) {
+      this.activeChatIndex = index; // Change active chat index
+    } else {
+      console.error('Invalid chat index');
+    }
+  }
+
+  // Shows the confirmation popup for deleting a chat
+  confirmDeleteChat(index: number) {
+    this.chatToDeleteIndex = index; // Store the index of the chat to delete
+    this.showConfirmationPopup = true; // Show the confirmation popup
+  }
+
+  // Deletes the selected chat session
   deleteChat() {
     if (this.chatToDeleteIndex !== null) {
-      this.chatSessions.splice(this.chatToDeleteIndex, 1);
+      this.chatSessions.splice(this.chatToDeleteIndex, 1); // Remove the chat session
 
       // Adjust the active chat index
       if (this.chatSessions.length === 0) {
-        // Create a new chat if no sessions remain
-        this.createNewChat();
+        this.createNewChat(); // Create a new chat if no sessions remain
       } else if (this.chatToDeleteIndex === this.activeChatIndex) {
+        // If the deleted chat was active, reset active index
         this.activeChatIndex = Math.min(this.chatToDeleteIndex, this.chatSessions.length - 1);
       }
 
-      this.chatToDeleteIndex = null;
-      this.showConfirmationPopup = false;
+      this.chatToDeleteIndex = null; // Reset the chat to delete index
+      this.showConfirmationPopup = false; // Hide the popup
     }
   }
 
+  // Cancels chat deletion
   cancelDelete() {
-    this.chatToDeleteIndex = null;
-    this.showConfirmationPopup = false;
+    this.chatToDeleteIndex = null; // Reset the index
+    this.showConfirmationPopup = false; // Hide the popup
   }
 }
