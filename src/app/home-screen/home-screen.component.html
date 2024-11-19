@@ -92,12 +92,8 @@
             <!-- Input Box -->
             <input type="text" class="input-box" placeholder="Type your reference message..." [(ngModel)]="userInput"
                 (keyup.enter)="sendMessage()" />
-
-            <!-- Send Button -->
             <button class="send-button" [disabled]="pendingFile && !isAllowedFile(pendingFile.file)"
-                (click)="sendMessage()">
-                Send
-            </button>
+                (click)="sendMessage()">Send</button>
         </div>
     </div>
 

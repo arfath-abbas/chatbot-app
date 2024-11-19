@@ -1,1 +1,43 @@
-/* You can add global styles to this file, and also import other style files */
+/* Success Toast */
+.p-toast-success {
+    background-color: #28a745 !important;
+    /* Green */
+    color: white !important;
+    border-radius: 8px;
+}
+
+/* Error Toast */
+.p-toast-error {
+    background-color: #dc3545 !important;
+    /* Red */
+    color: white !important;
+    border-radius: 8px;
+}
+
+/* Info Toast */
+.p-toast-info {
+    background-color: #17a2b8 !important;
+    /* Teal */
+    color: white !important;
+    border-radius: 8px;
+}
+
+/* Warning Toast */
+.p-toast-warning {
+    background-color: #ffc107 !important;
+    /* Yellow */
+    color: black !important;
+    border-radius: 8px;
+}
+
+/* Toast Message Font Styling */
+.p-toast-message {
+    font-size: 16px !important;
+    font-weight: bold !important;
+}
+
+/* Toast Message Container */
+.p-toast {
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1) !important;
+    border-radius: 10px !important;
+}
